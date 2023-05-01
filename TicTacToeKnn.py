@@ -35,7 +35,7 @@ knn = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
 knn.fit(dadosTabuleiroArr, dadosClassificacoArr)
 
 # Define a instância a ser testada
-X_test = ['x,x,x,x,o,o,x,o,o'] #[-1, 0, 0, -1, 1, 1, -1, 1, 1] # vitória para X
+X_test = ['x,x,x,x,o,o,x,o,o'] #[-1, 0, 0, -1, 1, 1, -1, 1, 1]
 
 entradaConvertida = [mapa[x] for x in X_test[0].replace(',', '')]
 
@@ -43,5 +43,5 @@ entradaConvertida = [mapa[x] for x in X_test[0].replace(',', '')]
 prediction = knn.predict(np.array(entradaConvertida).reshape(1,-1))
 
 # Imprime a classe prevista para a instância de teste
-print("Ainda tem jogo!" if prediction == "negative" else "Jogo acabou!") # deve imprimir 'positive'
+print("Ainda tem jogo!" if prediction == "negative" else "Jogo acabou!")
 
