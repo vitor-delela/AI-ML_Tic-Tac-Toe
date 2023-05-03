@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Carrega o dataset atraves da Leitura do arquivo CSV
-data = np.genfromtxt('/Users/vitordelela/Downloads/tic-tac-toe.data', delimiter='\n', dtype=str, encoding=None)
+data = np.genfromtxt('./tic-tac-toe.data', delimiter='\n', dtype=str, encoding=None)
 
 dadosTabuleiro = []
 dadosClassificaco = []
