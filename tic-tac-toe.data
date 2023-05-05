@@ -977,3 +977,7 @@ b,b,b,x,b,b,b,b,b,continue
 b,b,b,o,b,b,b,b,b,continue
 b,b,b,b,x,b,b,b,b,continue
 b,b,b,b,o,b,b,b,b,continue
+x,o,x,o,b,b,b,b,b,continue
+x,o,x,o,x,b,b,b,b,continue
+o,x,b,o,x,b,b,b,b,continue
+b,x,b,o,x,b,b,b,b,continue

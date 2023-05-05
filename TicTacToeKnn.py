@@ -2,10 +2,13 @@
 
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.feature_extraction.text import CountVectorizer
 
-# Carrega o dataset atraves da Leitura do arquivo CSV
-data = np.genfromtxt('./tic-tac-toe.data', delimiter='\n', dtype=str, encoding=None)
+atualizaDataset = False
+caminhoDataset = './tic-tac-toe.data'
+
+
+# -- CARREGAMENTO E MODIFICACOES DO DATASET ----------------------------------------------------------------------
+data = np.genfromtxt(caminhoDataset, delimiter='\n', dtype=str, encoding=None)
 
 dadosTabuleiro = []
 dadosClassificaco = []
@@ -15,45 +18,69 @@ for linha in data:
     dadosTabuleiro.append(','.join(valores[:9]))
     dadosClassificaco.append(','.join(valores[9:]))
 
-# Define o dicionário de mapeamento
-mapa = {'x': 1, 'o': -1, 'b': 0, 'X': 1, 'O': -1, 'B': 0}
+mapa = {'x': 1, 'o': -1, 'b': 0, 'X': 1, 'O': -1, 'B': 0} # Dicionário de mapeamento
 
 valores_numeros = []
 for entrada in dadosTabuleiro:
-    # Separa os valores da entrada em uma lista e aplica o mapeamento pra cada valor da lista
-    valores = entrada.split(',')
-    valores_numeros.append(np.array([mapa[x] for x in valores]))
+    valores = entrada.split(',') # Separa os valores da entrada em uma lista
+    valores_numeros.append(np.array([mapa[x] for x in valores])) # aplica o mapeamento pra cada valor da lista
 
 dadosTabuleiroArr = np.array(valores_numeros)
 dadosClassificacoArr = np.array(dadosClassificaco)
 
-# Define o algoritmo k-NN com k=4
-knn = KNeighborsClassifier(n_neighbors=4, metric='euclidean')
-
-# Treina o algoritmo com as instâncias de treinamento e as classes correspondentes
-knn.fit(dadosTabuleiroArr, dadosClassificacoArr)
+# - KNN --------------------------------------------------------------------------------------------
+knn = KNeighborsClassifier(n_neighbors=3, metric='euclidean') # Define o algoritmo knn usando k=3
+knn.fit(dadosTabuleiroArr, dadosClassificacoArr) # Treina o algoritmo
+# --------------------------------------------------------------------------------------------------
 
 def verifica_acabou(tabuleiroAtual):
 
-    # Define a instância a ser testada
-    #X_test = ['x,x,x,x,o,o,x,o,o'] #[-1, 0, 0, -1, 1, 1, -1, 1, 1]
+    print("tabuleiroAtual: ")
+    print(tabuleiroAtual)
+    imprime_tabuleiro()
 
-    entradaConvertida = [mapa[x] for x in tabuleiroAtual.replace(',', '')]
+    entradaConvertida = [mapa[x] for x in tabuleiroAtual.replace(',', '')] #traduz X para 1, O para -1 e b para 0
+    prediction = knn.predict(np.array(entradaConvertida).reshape(1,-1)) # Classifica o teste com base no treinamento
 
-    # Classifica a instância de teste com base nas instâncias de treinamento
-    prediction = knn.predict(np.array(entradaConvertida).reshape(1,-1))
-    print("prediction: ")
-    print(prediction)
+    # Imprime o resultado esperado com base na predição
+    if prediction == "positive":
+        print("\nVitoria de X!\n")
+    elif prediction == "negative":
+        print("\nVitoria de O!\n")
+    elif prediction == "draw":
+        print("\nEmpate!\n")
+    elif prediction == "continue":
+        print("\nAinda tem jogo!\n")
+    else: 
+        print("\nErro na leitura dos resultados!\n")
 
-    # Imprime a classe prevista para a instância de teste
-    #print("\nAinda tem jogo!\n" if prediction == "negative" else "\nJogo acabou!\n")
+    #recebe feedback a cada jogada para verificar se o resultado foi correto
+    if atualizaDataset:
+        resposta = 'a'
+        while resposta != 'y' and resposta != 'n':
+            resposta = input("Foi o resultado correto? (y/n): ")
+            if (resposta == 'N' or resposta == 'n'): 
+                gravar = input ("Digite o resultado esperado para ser gravado: ")
+                gravar = tabuleiroAtual + ',' + gravar
+                
+                with open(caminhoDataset, 'r') as f:
+                    conteudo = f.readlines() #armazena todo dataset para evitar jogada repetida
+                
+                #adiciona a combinacao da jogada somente se ela nao existe previamente no dataset
+                if tabuleiroAtual+",positive\n" not in conteudo and \
+                    tabuleiroAtual+",negative\n" not in conteudo and \
+                    tabuleiroAtual+",draw\n" not in conteudo and \
+                    tabuleiroAtual+",continue\n" not in conteudo :
+                    arquivo = open(caminhoDataset, "a")
+                    arquivo.write("\n")
+                    arquivo.write(gravar)
+                    arquivo.close()
+                print("tabuleiroAtual: ")
+                print(tabuleiroAtual)
+
+    #print("\nVitoria de X!\n" if prediction == "positive" else "\nJogo acabou!\n")
     #return (True if prediction == "negative" else False)
-    return False
-
-
-
-# Definindo o tabuleiro
-tabuleiro = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+    return False if 0 in entradaConvertida else True
 
 # Função para imprimir o tabuleiro
 def imprime_tabuleiro():
@@ -79,17 +106,18 @@ def jogo_da_velha():
         # Atualiza o tabuleiro com a jogada do jogador atual
         tabuleiro[int(jogada)-1] = jogador_atual
 
-        #num_nao_vazios = len([elem for elem in tabuleiro if elem.strip() != ''])
-
         # Verifica se houve vencedor, se nao passa a vez para o próximo jogador
         if verifica_acabou((",".join([elem.strip() if elem.strip() != '' else 'b' for elem in tabuleiro]))):
             imprime_tabuleiro()
             jogando = False
-        else:
+        else: 
             if jogador_atual == 'x':
                 jogador_atual = 'o'
             else:
                 jogador_atual = 'x'
 
+
+# Definindo o tabuleiro
+tabuleiro = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 # Inicia o jogo
 jogo_da_velha()
