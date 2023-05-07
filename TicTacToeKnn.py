@@ -2,41 +2,68 @@
 
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
 
-atualizaDataset = False
-caminhoDataset = './tic-tac-toe.data'
-
-
-# -- CARREGAMENTO E MODIFICACOES DO DATASET ----------------------------------------------------------------------
-data = np.genfromtxt(caminhoDataset, delimiter='\n', dtype=str, encoding=None)
-
-dadosTabuleiro = []
-dadosClassificaco = []
-
-for linha in data:
-    valores = linha.split(',')
-    dadosTabuleiro.append(','.join(valores[:9]))
-    dadosClassificaco.append(','.join(valores[9:]))
+aprendeDataset = False
+datasetTreino = './tic-tac-toe-treino.data'
+datasetTeste = './tic-tac-toe-teste.data'
 
 mapa = {'x': 1, 'o': -1, 'b': 0, 'X': 1, 'O': -1, 'B': 0} # Dicionário de mapeamento
 
-valores_numeros = []
-for entrada in dadosTabuleiro:
-    valores = entrada.split(',') # Separa os valores da entrada em uma lista
-    valores_numeros.append(np.array([mapa[x] for x in valores])) # aplica o mapeamento pra cada valor da lista
+""" -------------------------------------------------------------------------------------------------------
 
-dadosTabuleiroArr = np.array(valores_numeros)
-dadosClassificacoArr = np.array(dadosClassificaco)
+MODIFICACOES NO DATASET
 
-# - KNN --------------------------------------------------------------------------------------------
-knn = KNeighborsClassifier(n_neighbors=3, metric='euclidean') # Define o algoritmo knn usando k=3
-knn.fit(dadosTabuleiroArr, dadosClassificacoArr) # Treina o algoritmo
-# --------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------- """ 
+def converteDatasetParaDoisArrays(dataset):
+    data = np.genfromtxt(dataset, delimiter='\n', dtype=str, encoding=None)
 
-def verifica_acabou(tabuleiroAtual):
+    posicoesTabuleiro = []
+    rotulos = []
 
-    print("tabuleiroAtual: ")
-    print(tabuleiroAtual)
+    #Divide dataset entre posicoes e rotulos
+    for linha in data:
+        valores = linha.split(',')
+        posicoesTabuleiro.append(','.join(valores[:9]))
+        rotulos.append(','.join(valores[9:]))
+
+    #Converte os valores x, o e b para valores numericos de acordo com o dicionario acima
+    valores_numeros = []
+    for entrada in posicoesTabuleiro:
+        valores = entrada.split(',') # Separa os valores da entrada em uma lista
+        valores_numeros.append(np.array([mapa[x] for x in valores])) # aplica o mapeamento pra cada valor da lista
+
+    posicoesTabuleiroArr = np.array(valores_numeros)
+    rotulosArr = np.array(rotulos)
+
+    return posicoesTabuleiroArr, rotulosArr
+
+
+""" -------------------------------------------------------------------------------------------------------
+
+KNN - treino e testes
+
+------------------------------------------------------------------------------------------------------- """ 
+knn = KNeighborsClassifier(n_neighbors=3, metric='euclidean') # Define o algoritmo knn com o respectivo valor de k
+treinoPosicoes, treinoRotulos = converteDatasetParaDoisArrays(datasetTreino) # as posicoes a serem treinadas e os rótulos do conjunto de treino
+knn.fit(treinoPosicoes, treinoRotulos) # Treina o algoritmo
+
+testePosicoes, testeRotulos = converteDatasetParaDoisArrays(datasetTeste) # as posicoes a serem testadas e os rótulos verdadeiros do conjunto de teste
+
+teste = knn.predict(testePosicoes) # previsões do modelo para o conjunto de teste
+
+accuracy = accuracy_score(testeRotulos, teste)
+print("Eficiente dos testes: {:.2f}%".format(accuracy * 100))
+
+""" -------------------------------------------------------------------------------------------------------
+
+KNN - jogadas
+
+------------------------------------------------------------------------------------------------------- """ 
+def atualiza_status_partida(tabuleiroAtual):
+
+    #print("tabuleiroAtual: ")
+    #print(tabuleiroAtual)
     imprime_tabuleiro()
 
     entradaConvertida = [mapa[x] for x in tabuleiroAtual.replace(',', '')] #traduz X para 1, O para -1 e b para 0
@@ -55,7 +82,7 @@ def verifica_acabou(tabuleiroAtual):
         print("\nErro na leitura dos resultados!\n")
 
     #recebe feedback a cada jogada para verificar se o resultado foi correto
-    if atualizaDataset:
+    if aprendeDataset:
         resposta = 'a'
         while resposta != 'y' and resposta != 'n':
             resposta = input("Foi o resultado correto? (y/n): ")
@@ -63,7 +90,7 @@ def verifica_acabou(tabuleiroAtual):
                 gravar = input ("Digite o resultado esperado para ser gravado: ")
                 gravar = tabuleiroAtual + ',' + gravar
                 
-                with open(caminhoDataset, 'r') as f:
+                with open(datasetTreino, 'r') as f:
                     conteudo = f.readlines() #armazena todo dataset para evitar jogada repetida
                 
                 #adiciona a combinacao da jogada somente se ela nao existe previamente no dataset
@@ -71,16 +98,20 @@ def verifica_acabou(tabuleiroAtual):
                     tabuleiroAtual+",negative\n" not in conteudo and \
                     tabuleiroAtual+",draw\n" not in conteudo and \
                     tabuleiroAtual+",continue\n" not in conteudo :
-                    arquivo = open(caminhoDataset, "a")
+                    arquivo = open(datasetTreino, "a")
                     arquivo.write("\n")
                     arquivo.write(gravar)
                     arquivo.close()
                 print("tabuleiroAtual: ")
                 print(tabuleiroAtual)
 
-    #print("\nVitoria de X!\n" if prediction == "positive" else "\nJogo acabou!\n")
-    #return (True if prediction == "negative" else False)
     return False if 0 in entradaConvertida else True
+
+""" -------------------------------------------------------------------------------------------------------
+
+FRONT END
+
+------------------------------------------------------------------------------------------------------- """ 
 
 # Função para imprimir o tabuleiro
 def imprime_tabuleiro():
@@ -91,12 +122,13 @@ def imprime_tabuleiro():
     print(tabuleiro[6] + '|' + tabuleiro[7] + '|' + tabuleiro[8])
 
 # Função principal do jogo
-def jogo_da_velha():
-    jogando = True
-    jogador_atual = 'x'
+def jogo():
+    temJogo = True
+    player = 'x'
 
-    while jogando:
-        imprime_tabuleiro()
+    imprime_tabuleiro()
+
+    while temJogo:
         jogada = input("Entre a posição desejada: ")
         
         # Verifica se a jogada é válida
@@ -104,20 +136,20 @@ def jogo_da_velha():
             jogada = input("Entre a posição desejada: ")
 
         # Atualiza o tabuleiro com a jogada do jogador atual
-        tabuleiro[int(jogada)-1] = jogador_atual
+        tabuleiro[int(jogada)-1] = player
 
-        # Verifica se houve vencedor, se nao passa a vez para o próximo jogador
-        if verifica_acabou((",".join([elem.strip() if elem.strip() != '' else 'b' for elem in tabuleiro]))):
+        # Atualiza o status com base no Knn e passa a vez para o próximo jogador se houver
+        if atualiza_status_partida((",".join([elem.strip() if elem.strip() != '' else 'b' for elem in tabuleiro]))):
             imprime_tabuleiro()
-            jogando = False
+            temJogo = False
         else: 
-            if jogador_atual == 'x':
-                jogador_atual = 'o'
+            if player == 'x':
+                player = 'o'
             else:
-                jogador_atual = 'x'
+                player = 'x'
 
 
 # Definindo o tabuleiro
 tabuleiro = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 # Inicia o jogo
-jogo_da_velha()
+jogo()
