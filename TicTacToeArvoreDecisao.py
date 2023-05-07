@@ -1,8 +1,10 @@
 # pip install -U scikit-learn
 
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+import pandas as pd
 
 aprendeDataset = False
 datasetTreino = './tic-tac-toe-treino.data'
@@ -47,13 +49,11 @@ Bayesiano - Treino e Testes
 
 ------------------------------------------------------------------------------------------------------- """
 # Cria o modelo Bayesiano
-model = GaussianNB()
+model = DecisionTreeClassifier()
 
-# model = GaussianNB(metric='euclidean')
 
-# Define o algoritmo Bayesiano com o respectivo valor de k
 treinoPosicoes, treinoRotulos = converteDatasetParaDoisArrays(
-    datasetTreino)  # as posicoes a serem treinadas e os rótulos do conjunto de treino
+    datasetTreino)
 model.fit(treinoPosicoes, treinoRotulos)  # Treina o algoritmo
 
 testePosicoes, testeRotulos = converteDatasetParaDoisArrays(
