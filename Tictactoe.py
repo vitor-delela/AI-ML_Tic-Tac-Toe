@@ -2,9 +2,13 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
 import numpy as np
+from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.naive_bayes import GaussianNB
 
 root = Tk()
 root.title("Jogo da velha")
@@ -12,23 +16,21 @@ root.iconbitmap()
 
 
 datasetTreino = returnDataSetTreino()
-aprendeDataset = True
 
 mapa = returnMapa()
 mapaEstados = returnMapaEstados()
 
 knn, knn_accuracy = KnnAlgorithm()
 mlp, mlp_accuracy = MlpAlgorithm()
+bayesian, bayesian_accuracy = BayesianAlgorithm()
 
 
 def accuracy():
-    print("Eficiência do algoritmo KNN: {:.2f}%".format(knn_accuracy * 100))
-    print("Eficiência do algoritmo MLP: {:.2f}%".format(mlp_accuracy * 100))
-
     messagebox.showinfo(
         "Jogo da velha",
-        "Eficiência do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
-        + "Eficiência do algoritmo MLP: {:.2f}%".format(mlp_accuracy * 100),
+        "Precisão do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
+        + "Precisão do algoritmo MLP: {:.2f}%".format(mlp_accuracy * 100)
+        + "Precisão do algoritmo Bayesian: {:.2f}%".format(bayesian_accuracy * 100),
     )
 
 
@@ -49,7 +51,6 @@ def desabilitarCampos():
 def verficaResposta():
     global answer
     answer = messagebox.askquestion("Jogo da velha", "Resultado correto?")
-    print(answer)
 
     if answer == "no":
         aprendeDataSet()
@@ -79,29 +80,42 @@ def verificaVencedor():
 
     if count == 9:
         desabilitarCampos()
+    prediction = algoritmo.predict(np.array(entradaConvertida).reshape(1, -1))
 
-    # prediction = knn.predict(np.array(entradaConvertida).reshape(1, -1))
-    prediction = mlp.predict(np.array(entradaConvertida).reshape(1, -1))
-    answer = ""
+    print("KNN: ", type(algoritmo) is KNeighborsClassifier)
+    print("MLP: ", type(algoritmo) is MLPClassifier)
+    print("BAYESIANO: ", type(algoritmo) is GaussianNB)
 
     if prediction == "positive":
         winner = True
         messagebox.showinfo("Jogo da velha", "Vitoria de X!")
-        verficaResposta()
+        if aprendeDataset is False:
+            return
+        else:
+            verficaResposta()
     elif prediction == "negative":
         winner = True
         messagebox.showinfo("Jogo da velha", "Vitoria de O!")
-        verficaResposta()
+        if aprendeDataset is False:
+            return
+        else:
+            verficaResposta()
     elif prediction == "draw":
         winner = True
         messagebox.showinfo("Jogo da velha", "Empate!")
-        verficaResposta()
+        if aprendeDataset is False:
+            return
+        else:
+            verficaResposta()
     elif prediction == "continue":
         winner = False
         messagebox.showinfo("Jogo da velha", "Ainda tem jogo!")
-        verficaResposta()
+        if aprendeDataset is False:
+            return
+        else:
+            verficaResposta()
     else:
-        print("\nErro na leitura dos resultados!\n")
+        messagebox.showerror("\nErro na leitura dos resultados!\n")
 
 
 def b_click(b):
@@ -159,8 +173,48 @@ def aprendeDataSet():
             arquivo.write("\n")
             arquivo.write(gravar)
             arquivo.close()
-            print("tabuleiroAtual: ")
-            print(tabuleiroAtual)
+            print("tabuleiroAtual:\n {:s}", tabuleiroAtual)
+
+
+def selecionarAlgoritmo():
+    global algoritmo
+
+    alg = simpledialog.askinteger(
+        title="Jogo da velha",
+        prompt="Selecione o algoritmo:\n"
+        + "1 - KNN: \n"
+        + "2 - MLP\n"
+        + "3 - BAYESIANO\n",
+    )
+
+    if alg == None:
+        return
+    elif int(alg) == 1:
+        algoritmo = knn
+    elif int(alg) == 2:
+        algoritmo = mlp
+    elif int(alg) == 3:
+        algoritmo = bayesian
+    else:
+        return
+
+
+def treinarAlgoritmo():
+    global aprendeDataset
+
+    ret = simpledialog.askinteger(
+        title="Jogo da velha",
+        prompt="Treinar Algoritmo?:\n" + "1 - SIM: \n" + "2 - NÃO",
+    )
+
+    if ret == None:
+        return
+    elif int(ret) == 1:
+        aprendeDataset = True
+    elif int(ret) == 2:
+        aprendeDataset = False
+    else:
+        return
 
 
 def reiniciar():
@@ -168,7 +222,6 @@ def reiniciar():
     global clicked, count
     clicked = True
     count = 0
-    aprendeDataset = True
 
     b1 = Button(
         root,
@@ -267,15 +320,20 @@ def reiniciar():
     b9.grid(row=2, column=2)
 
 
-# ticTacToeMenu
 menu = Menu(root)
 root.config(menu=menu)
 
 options = Menu(menu, tearoff=False)
+algorithm = Menu(menu, tearoff=False)
 menu.add_cascade(label="Opções", menu=options)
+menu.add_cascade(label="Algoritmos", menu=algorithm)
 options.add_command(label="Reiniciar", command=reiniciar)
-options.add_command(label="Precisão do algoritmo", command=accuracy)
+options.add_command(label="Treinar Algoritmo", command=treinarAlgoritmo)
+algorithm.add_command(label="Precisão do algoritmo", command=accuracy)
+algorithm.add_command(label="Selecionar Algoritmo", command=selecionarAlgoritmo)
 
+selecionarAlgoritmo()
+treinarAlgoritmo()
 reiniciar()
 
 root.mainloop()
