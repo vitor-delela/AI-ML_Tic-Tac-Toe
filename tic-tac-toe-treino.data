@@ -960,3 +960,5 @@ x,b,o,b,o,b,x,o,x,continue
 x,x,o,b,o,b,x,o,x,continue
 x,x,o,b,o,o,x,o,x,continue
 x,x,o,o,b,x,x,b,o,continue
+x,b,x,b,o,b,o,x,b,continue
+x,b,x,b,o,b,o,x,o,continue
