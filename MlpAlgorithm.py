@@ -8,13 +8,13 @@ from Utils import returnDadosTreino, returnDadosTeste
 
 def MlpAlgorithm():
     mlp = MLPClassifier(
-            hidden_layer_sizes=(200,),
+            hidden_layer_sizes=(1000,),
             max_iter=600,
-            verbose=True,
+            verbose=False,
             learning_rate='constant',
             learning_rate_init=0.01,
             activation='relu',
-            solver = 'lbfgs'
+            solver = 'adam'
         )
 
     entradaTreino, saidaTreino = returnDadosTreino()

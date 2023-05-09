@@ -29,7 +29,7 @@ def accuracy():
     messagebox.showinfo(
         "Jogo da velha",
         "Precisão do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
-        + "Precisão do algoritmo MLP: {:.2f}%".format(mlp_accuracy * 100)
+        + "Precisão do algoritmo MLP: {:.2f}%\n".format(mlp_accuracy * 100)
         + "Precisão do algoritmo Bayesian: {:.2f}%".format(bayesian_accuracy * 100),
     )
 
@@ -50,12 +50,17 @@ def desabilitarCampos():
 
 def verficaResposta():
     global answer
+    global erros, acertos
+    erros = 0
+    acertos = 0
     answer = messagebox.askquestion("Jogo da velha", "Resultado correto?")
 
     if answer == "no":
+        erros += 1
         aprendeDataSet()
 
     if answer == "yes" and winner == True:
+        acertos += 1
         desabilitarCampos()
 
 
@@ -82,9 +87,9 @@ def verificaVencedor():
         desabilitarCampos()
     prediction = algoritmo.predict(np.array(entradaConvertida).reshape(1, -1))
 
-    print("KNN: ", type(algoritmo) is KNeighborsClassifier)
-    print("MLP: ", type(algoritmo) is MLPClassifier)
-    print("BAYESIANO: ", type(algoritmo) is GaussianNB)
+    # print("KNN: ", type(algoritmo) is KNeighborsClassifier)
+    # print("MLP: ", type(algoritmo) is MLPClassifier)
+    # print("BAYESIANO: ", type(algoritmo) is GaussianNB)
 
     if prediction == "positive":
         winner = True
