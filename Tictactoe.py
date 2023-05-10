@@ -5,10 +5,13 @@ import numpy as np
 from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
+from DecisionTreeAlgorithm import DecisionTreeAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+
 
 root = Tk()
 root.title("Jogo da velha")
@@ -19,9 +22,10 @@ datasetTreino = returnDataSetTreino()
 
 mapa = returnMapa()
 mapaEstados = returnMapaEstados()
-
+decisionTree, decisionTree_accuracy = DecisionTreeAlgorithm()
 knn, knn_accuracy = KnnAlgorithm()
 mlp, mlp_accuracy = MlpAlgorithm()
+
 bayesian, bayesian_accuracy = BayesianAlgorithm()
 
 
@@ -30,7 +34,8 @@ def accuracy():
         "Jogo da velha",
         "Precisão do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
         + "Precisão do algoritmo MLP: {:.2f}%\n".format(mlp_accuracy * 100)
-        + "Precisão do algoritmo Bayesian: {:.2f}%".format(bayesian_accuracy * 100),
+        + "Precisão do algoritmo Bayesian: {:.2f}%\n".format(bayesian_accuracy * 100)
+        + "Precisão do algoritmo Decision Tree: {:.2f}%".format(decisionTree_accuracy * 100),
     )
 
 
@@ -90,6 +95,8 @@ def verificaVencedor():
     # print("KNN: ", type(algoritmo) is KNeighborsClassifier)
     # print("MLP: ", type(algoritmo) is MLPClassifier)
     # print("BAYESIANO: ", type(algoritmo) is GaussianNB)
+    # print("Decision Tree: ", type(algoritmo) is DecisionTreeClassifier)
+
 
     if prediction == "positive":
         winner = True
@@ -189,7 +196,8 @@ def selecionarAlgoritmo():
         prompt="Selecione o algoritmo:\n"
         + "1 - KNN: \n"
         + "2 - MLP\n"
-        + "3 - BAYESIANO\n",
+        + "3 - BAYESIANO\n"
+        + "4 - DecisionTree\n",
     )
 
     if alg == None:
@@ -200,6 +208,8 @@ def selecionarAlgoritmo():
         algoritmo = mlp
     elif int(alg) == 3:
         algoritmo = bayesian
+    elif int(alg) == 4:
+        algoritmo = decisionTree
     else:
         return
 

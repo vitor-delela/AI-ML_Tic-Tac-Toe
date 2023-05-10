@@ -1032,3 +1032,8 @@ x,x,o,b,b,b,o,b,x,continue
 x,x,o,b,b,x,o,o,x,continue
 o,x,x,b,b,b,o,b,b,continue
 x,o,o,x,b,o,o,x,x,continue
+x,b,b,b,b,b,b,b,b,continue
+x,b,b,o,b,b,b,b,b,continue
+x,b,b,o,b,b,x,b,b,continue
+x,b,b,o,b,b,x,b,o,continue
+x,b,b,o,x,b,x,b,o,positive
