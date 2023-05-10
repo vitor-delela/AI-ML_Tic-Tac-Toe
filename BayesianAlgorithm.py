@@ -17,7 +17,7 @@ def BayesianAlgorithm():
 
     bayesian = GaussianNB()
 
-    # entradaTreino, saidaTreino = returnDadosTreino()
+    # entradaTreino, saidaTreino = returnDadosTreino() - Anterior a melhoria
     bayesian.fit(entradaTreino, saidaTreino)
 
     entradaTeste, saidaTeste = returnDadosTeste()

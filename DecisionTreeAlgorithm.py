@@ -8,10 +8,8 @@ from Utils import returnDadosTeste, returnDadosTreino
 
 def DecisionTreeAlgorithm():
     decisionTree = DecisionTreeClassifier()
-
     entradaTreino, saidaTreino = returnDadosTreino()
     decisionTree.fit(entradaTreino, saidaTreino)
-
     entradaTeste, saidaTeste = returnDadosTeste()
     saidaPredita = decisionTree.predict(entradaTeste)
 
