@@ -28,13 +28,13 @@ def returnDadosTreino():
         posicoesTabuleiro.append(",".join(valores[:9]))
         rotulos.append(",".join(valores[9:]))
 
-    # Converte os valores x, o e b para valores numericos de acordo com o dicionario acima
+    # Converte os valores x, o e b para valores numericos de acordo com o dicionario definido
     valores_numeros = []
     for entrada in posicoesTabuleiro:
         valores = entrada.split(",")  # Separa os valores da entrada em uma lista
         valores_numeros.append(
-            np.array([mapa[x] for x in valores])
-        )  # aplica o mapeamento pra cada valor da lista
+            np.array([mapa[x] for x in valores])# aplica o mapeamento pra cada valor da lista
+        )  
 
     posicoesTabuleiroArr = np.array(valores_numeros)
     rotulosArr = np.array(rotulos)

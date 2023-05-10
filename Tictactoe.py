@@ -6,9 +6,6 @@ from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.naive_bayes import GaussianNB
 
 root = Tk()
 root.title("Jogo da velha")

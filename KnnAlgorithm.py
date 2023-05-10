@@ -2,9 +2,11 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 from Utils import returnDadosTreino, returnDadosTeste
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def KnnAlgorithm():
-    knn = KNeighborsClassifier(n_neighbors=3, metric='euclidean') # Define o algoritmo knn com o respectivo valor de k
+    knn = KNeighborsClassifier(n_neighbors=6) # Define o algoritmo knn com o respectivo valor de k
     treinoPosicoes, treinoRotulos = returnDadosTreino() # as posicoes a serem treinadas e os rótulos do conjunto de treino
     knn.fit(treinoPosicoes, treinoRotulos) # Treina o algoritmo
 
@@ -15,3 +17,21 @@ def KnnAlgorithm():
     accuracy = accuracy_score(testeRotulos, teste)
 
     return (knn, accuracy)
+
+
+def KnnCharts():
+    num_vizinhos = 100
+    scores = []
+    testePosicoes, testeRotulos = returnDadosTeste() # as posicoes a serem testadas e os rótulos verdadeiros do conjunto de teste
+    treinoPosicoes, treinoRotulos = returnDadosTreino() # as posicoes a serem treinadas e os rótulos do conjunto de treino
+    for k in range(1,num_vizinhos):
+        model = KNeighborsClassifier(n_neighbors=k)
+        model.fit(treinoPosicoes,treinoRotulos)
+        accuracy = model.score(testePosicoes,testeRotulos)
+        scores.append(accuracy)
+
+    plt.plot(np.arange(1,num_vizinhos),scores)
+    plt.title("Acurácias do k-NN por número de vizinhos")
+    plt.xlabel("Número de vizinhos")
+    plt.ylabel("Acurácia")
+    plt.show()
