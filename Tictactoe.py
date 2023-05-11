@@ -2,10 +2,11 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
 import numpy as np
+import matplotlib.pyplot as plt
 from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
-from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
+from Utils import returnDadosTeste, returnMapa, returnDataSetTreino, returnMapaEstados
 
 root = Tk()
 root.title("Jogo da velha")
@@ -322,6 +323,105 @@ def reiniciar():
     b9.grid(row=2, column=2)
 
 
+def plotGrafic():
+    (testePosicoes, testeRotulos) = returnDadosTeste()
+    retKnn = []
+    retMlp = []
+    retBay = []
+    real = []
+
+    for p in testePosicoes:
+        aux1 = knn.predict(np.array(p).reshape(1, -1))
+        retKnn.append(aux1[0])
+        aux2 = mlp.predict(np.array(p).reshape(1, -1))
+        retMlp.append(aux2[0])
+        aux3 = bayesian.predict(np.array(p).reshape(1, -1))
+        retBay.append(aux3[0])
+
+    for r in testeRotulos:
+        real.append(r)
+
+    BayAccuracy = bayesian.score(testePosicoes, testeRotulos)
+    knnAccuracy = knn.score(testePosicoes, testeRotulos)
+    MlpAccuracy = mlp.score(testePosicoes, testeRotulos)
+
+    jogadas = [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42",
+        "43",
+        "4",
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "50",
+        "51",
+        "52",
+    ]
+
+    print("arr", len(jogadas))
+    print("arr", jogadas)
+    print("knn", len(retKnn))
+    print("knn", retKnn)
+    print("mlp", len(retMlp))
+    print("mlp", retMlp)
+    print("bayesian", len(retBay))
+    print("bayesian", retBay)
+    print("real", len(real))
+    print("real", real)
+
+    plt.plot(jogadas, real, alpha=0.5, label="REAIS")
+    plt.plot(jogadas, retKnn, alpha=0.5, label="KNN")
+    plt.plot(jogadas, retMlp, alpha=0.5, label="MLP")
+    plt.plot(jogadas, retBay, alpha=0.5, label="BAY")
+    plt.xlabel("Jogada")
+    plt.ylabel("Resultado")
+    plt.title("Comparação dos algoritmos com o resultado real")
+    plt.legend(loc=1)
+    plt.show()
+
+
 menu = Menu(root)
 root.config(menu=menu)
 
@@ -333,6 +433,7 @@ options.add_command(label="Reiniciar", command=reiniciar)
 options.add_command(label="Treinar Algoritmo", command=treinarAlgoritmo)
 algorithm.add_command(label="Precisão do algoritmo", command=accuracy)
 algorithm.add_command(label="Selecionar Algoritmo", command=selecionarAlgoritmo)
+algorithm.add_command(label="Plot", command=plotGrafic)
 
 selecionarAlgoritmo()
 treinarAlgoritmo()

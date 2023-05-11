@@ -33,8 +33,10 @@ def returnDadosTreino():
     for entrada in posicoesTabuleiro:
         valores = entrada.split(",")  # Separa os valores da entrada em uma lista
         valores_numeros.append(
-            np.array([mapa[x] for x in valores])# aplica o mapeamento pra cada valor da lista
-        )  
+            np.array(
+                [mapa[x] for x in valores]
+            )  # aplica o mapeamento pra cada valor da lista
+        )
 
     posicoesTabuleiroArr = np.array(valores_numeros)
     rotulosArr = np.array(rotulos)
