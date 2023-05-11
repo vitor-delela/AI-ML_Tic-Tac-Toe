@@ -353,91 +353,37 @@ def plotGrafic():
         aux3 = bayesian.predict(np.array(p).reshape(1, -1))
         retBay.append(aux3[0])
         aux4 = decisionTree.predict(np.array(p).reshape(1, -1))
-        retDT.append(aux3[0])
+        retDT.append(aux4[0])
 
     for r in testeRotulos:
         real.append(r)
 
-    BayAccuracy = bayesian.score(testePosicoes, testeRotulos)
-    knnAccuracy = knn.score(testePosicoes, testeRotulos)
-    MlpAccuracy = mlp.score(testePosicoes, testeRotulos)
-    DTreeAccuracy = decisionTree.score(testePosicoes, testeRotulos)
-
     jogadas = [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "24",
-        "25",
-        "26",
-        "27",
-        "28",
-        "29",
-        "30",
-        "31",
-        "32",
-        "33",
-        "34",
-        "35",
-        "36",
-        "37",
-        "38",
-        "39",
-        "40",
-        "41",
-        "42",
-        "43",
-        "4",
-        "45",
-        "46",
-        "47",
-        "48",
-        "49",
-        "50",
-        "51",
-        "52",
+        "1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20",
+        "21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40",
+        "41","42","43","44","45","46","47","48","49","50","51","52","53"
     ]
 
-    print("arr", len(jogadas))
-    print("arr", jogadas)
-    print("knn", len(retKnn))
-    print("knn", retKnn)
-    print("mlp", len(retMlp))
-    print("mlp", retMlp)
-    print("bayesian", len(retBay))
-    print("bayesian", retBay)
-    print("real", len(real))
-    print("real", real)
+    fig, axs = plt.subplots(5, 1, figsize=(25, 100))
 
-    plt.plot(jogadas, real, alpha=0.5, label="REAIS")
-    plt.plot(jogadas, retKnn, alpha=0.5, label="KNN")
-    plt.plot(jogadas, retMlp, alpha=0.5, label="MLP")
-    plt.plot(jogadas, retBay, alpha=0.5, label="BAY")
-    plt.plot(jogadas, retDT, alpha=0.5, label="DET")
-    plt.xlabel("Jogada")
-    plt.ylabel("Resultado")
-    plt.title("Comparação dos algoritmos com o resultado real")
-    plt.legend(loc=1)
+    # criar cada subplot com um dos gráficos
+    axs[0].plot(jogadas, real, alpha=0.25, label="Teste", color="blue")
+    axs[0].legend(loc='upper left')
+    axs[1].plot(jogadas, retKnn, alpha=0.25, label="KNN", color="orange")
+    axs[1].legend(loc='upper left')
+    axs[2].plot(jogadas, retMlp, alpha=0.25, label="MLP", color="green")
+    axs[2].legend(loc='upper left')
+    axs[3].plot(jogadas, retBay, alpha=0.25, label="BAY", color="red")
+    axs[3].legend(loc='upper left')
+    axs[4].plot(jogadas, retDT, alpha=0.25, label="DT", color="purple")
+    axs[4].legend(loc='upper left')
+
+    labels = ['positive', 'negative', 'continue', 'draw']
+    for ax in axs:
+        ax.set_yticks((labels))
+        for xi in range(len(jogadas)):
+            ax.axvline(xi, color="black", alpha=0.1, linestyle='--')
+     
     plt.show()
 
 

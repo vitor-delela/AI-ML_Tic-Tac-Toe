@@ -48,5 +48,6 @@ b,x,x,o,o,o,x,o,x,negative
 b,o,x,x,o,b,b,o,x,negative
 b,b,o,x,o,b,o,x,x,negative
 b,b,o,x,b,o,x,x,o,negative
+b,b,b,b,b,b,b,o,x,continue
 x,o,x,o,x,x,o,x,o,draw
 o,x,o,o,x,x,x,o,x,draw
