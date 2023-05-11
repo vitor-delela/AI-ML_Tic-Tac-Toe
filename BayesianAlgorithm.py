@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 
@@ -15,7 +15,7 @@ def BayesianAlgorithm():
     entradaTeste, saidaTeste = returnDadosTeste()
     entradaTeste = scaler.transform(entradaTeste)
 
-    bayesian = GaussianNB()
+    bayesian = BernoulliNB()
 
     # entradaTreino, saidaTreino = returnDadosTreino() - Anterior a melhoria
     bayesian.fit(entradaTreino, saidaTreino)
