@@ -10,6 +10,7 @@ from Utils import returnDadosTeste, returnDadosTreino
 def BayesianAlgorithm():
     # Pré-processamento dos dados de entrada
     scaler = StandardScaler()
+
     entradaTreino, saidaTreino = returnDadosTreino()
     entradaTreino = scaler.fit_transform(entradaTreino)
     entradaTeste, saidaTeste = returnDadosTeste()

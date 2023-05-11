@@ -7,11 +7,6 @@ from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
 from DecisionTreeAlgorithm import DecisionTreeAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.tree import DecisionTreeClassifier
-
 
 root = Tk()
 root.title("Jogo da velha")
