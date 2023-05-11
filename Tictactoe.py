@@ -6,13 +6,20 @@ import matplotlib.pyplot as plt
 from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
-from Utils import returnDadosTeste, returnMapa, returnDataSetTreino, returnMapaEstados
+from Utils import (
+    returnDadosTeste,
+    returnDadosTreino,
+    returnMapa,
+    returnDataSetTreino,
+    returnMapaEstados,
+)
 from DecisionTreeAlgorithm import DecisionTreeAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import model_selection
 
 
 root = Tk()
@@ -37,7 +44,9 @@ def accuracy():
         "Precisão do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
         + "Precisão do algoritmo MLP: {:.2f}%\n".format(mlp_accuracy * 100)
         + "Precisão do algoritmo Bayesian: {:.2f}%\n".format(bayesian_accuracy * 100)
-        + "Precisão do algoritmo Decision Tree: {:.2f}%".format(decisionTree_accuracy * 100),
+        + "Precisão do algoritmo Decision Tree: {:.2f}%".format(
+            decisionTree_accuracy * 100
+        ),
     )
 
 
@@ -98,7 +107,6 @@ def verificaVencedor():
     # print("MLP: ", type(algoritmo) is MLPClassifier)
     # print("BAYESIANO: ", type(algoritmo) is BernoulliNB)
     # print("Decision Tree: ", type(algoritmo) is DecisionTreeClassifier)
-
 
     if prediction == "positive":
         winner = True
@@ -339,6 +347,10 @@ def reiniciar():
 
 def plotGrafic():
     (testePosicoes, testeRotulos) = returnDadosTeste()
+    (
+        treinoPosicoes,
+        treinoRotulos,
+    ) = returnDadosTreino()
     retKnn = []
     retMlp = []
     retBay = []
@@ -362,6 +374,25 @@ def plotGrafic():
     knnAccuracy = knn.score(testePosicoes, testeRotulos)
     MlpAccuracy = mlp.score(testePosicoes, testeRotulos)
     DTreeAccuracy = decisionTree.score(testePosicoes, testeRotulos)
+
+    models = []
+    models.append(
+        (
+            "LMP",
+            MLPClassifier(
+                hidden_layer_sizes=(1000,),
+                max_iter=600,
+                verbose=False,
+                learning_rate="constant",
+                learning_rate_init=0.01,
+                activation="relu",
+                solver="adam",
+            ),
+        )
+    )
+    models.append(("KNN", KNeighborsClassifier(n_neighbors=6)))
+    models.append(("DTR", DecisionTreeClassifier()))
+    models.append(("BAY", BernoulliNB()))
 
     jogadas = [
         "1",
@@ -418,26 +449,37 @@ def plotGrafic():
         "52",
     ]
 
-    print("arr", len(jogadas))
-    print("arr", jogadas)
-    print("knn", len(retKnn))
-    print("knn", retKnn)
-    print("mlp", len(retMlp))
-    print("mlp", retMlp)
-    print("bayesian", len(retBay))
-    print("bayesian", retBay)
-    print("real", len(real))
-    print("real", real)
+    # plt.bar(jogadas, real, alpha=0.5, label="REAIS")
 
-    plt.plot(jogadas, real, alpha=0.5, label="REAIS")
-    plt.plot(jogadas, retKnn, alpha=0.5, label="KNN")
-    plt.plot(jogadas, retMlp, alpha=0.5, label="MLP")
-    plt.plot(jogadas, retBay, alpha=0.5, label="BAY")
-    plt.plot(jogadas, retDT, alpha=0.5, label="DET")
-    plt.xlabel("Jogada")
-    plt.ylabel("Resultado")
-    plt.title("Comparação dos algoritmos com o resultado real")
-    plt.legend(loc=1)
+    # plt.bar(jogadas, retKnn, alpha=0.5, label="KNN")
+    # plt.bar(jogadas, retMlp, alpha=0.5, label="MLP")
+    # plt.bar(jogadas, retBay, alpha=0.5, label="BAY")
+    # plt.bar(jogadas, retDT, alpha=0.5, label="DET")
+    # plt.xlabel("Jogada")
+    # plt.ylabel("Resultado")
+    # plt.title("Comparação dos algoritmos com o resultado real")
+    # plt.legend(loc=1)
+    # plt.show()
+
+    results = []
+    names = []
+    seed = 7
+    scoring = "accuracy"
+    for name, model in models:
+        kfold = model_selection.KFold(n_splits=10)
+        cv_results = model_selection.cross_val_score(
+            model, treinoPosicoes, treinoRotulos, cv=kfold, scoring=scoring
+        )
+        results.append(cv_results)
+        names.append(name)
+        msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
+        print(msg)
+    # boxplot algorithm comparison
+    fig = plt.figure()
+    fig.suptitle("Algorithm Comparison")
+    ax = fig.add_subplot(111)
+    plt.boxplot(results)
+    ax.set_xticklabels(names)
     plt.show()
 
 
