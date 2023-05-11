@@ -7,6 +7,13 @@ from BayesianAlgorithm import BayesianAlgorithm
 from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
 from Utils import returnDadosTeste, returnMapa, returnDataSetTreino, returnMapaEstados
+from DecisionTreeAlgorithm import DecisionTreeAlgorithm
+from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.tree import DecisionTreeClassifier
+
 
 root = Tk()
 root.title("Jogo da velha")
@@ -17,9 +24,10 @@ datasetTreino = returnDataSetTreino()
 
 mapa = returnMapa()
 mapaEstados = returnMapaEstados()
-
+decisionTree, decisionTree_accuracy = DecisionTreeAlgorithm()
 knn, knn_accuracy = KnnAlgorithm()
 mlp, mlp_accuracy = MlpAlgorithm()
+
 bayesian, bayesian_accuracy = BayesianAlgorithm()
 
 
@@ -28,7 +36,8 @@ def accuracy():
         "Jogo da velha",
         "Precisão do algoritmo KNN: {:.2f}%\n".format(knn_accuracy * 100)
         + "Precisão do algoritmo MLP: {:.2f}%\n".format(mlp_accuracy * 100)
-        + "Precisão do algoritmo Bayesian: {:.2f}%".format(bayesian_accuracy * 100),
+        + "Precisão do algoritmo Bayesian: {:.2f}%\n".format(bayesian_accuracy * 100)
+        + "Precisão do algoritmo Decision Tree: {:.2f}%".format(decisionTree_accuracy * 100),
     )
 
 
@@ -87,7 +96,9 @@ def verificaVencedor():
 
     # print("KNN: ", type(algoritmo) is KNeighborsClassifier)
     # print("MLP: ", type(algoritmo) is MLPClassifier)
-    # print("BAYESIANO: ", type(algoritmo) is GaussianNB)
+    # print("BAYESIANO: ", type(algoritmo) is BernoulliNB)
+    # print("Decision Tree: ", type(algoritmo) is DecisionTreeClassifier)
+
 
     if prediction == "positive":
         winner = True
@@ -187,7 +198,8 @@ def selecionarAlgoritmo():
         prompt="Selecione o algoritmo:\n"
         + "1 - KNN: \n"
         + "2 - MLP\n"
-        + "3 - BAYESIANO\n",
+        + "3 - BAYESIANO\n"
+        + "4 - DecisionTree\n",
     )
 
     if alg == None:
@@ -198,6 +210,8 @@ def selecionarAlgoritmo():
         algoritmo = mlp
     elif int(alg) == 3:
         algoritmo = bayesian
+    elif int(alg) == 4:
+        algoritmo = decisionTree
     else:
         return
 
@@ -328,6 +342,7 @@ def plotGrafic():
     retKnn = []
     retMlp = []
     retBay = []
+    retDT = []
     real = []
 
     for p in testePosicoes:
@@ -337,6 +352,8 @@ def plotGrafic():
         retMlp.append(aux2[0])
         aux3 = bayesian.predict(np.array(p).reshape(1, -1))
         retBay.append(aux3[0])
+        aux4 = decisionTree.predict(np.array(p).reshape(1, -1))
+        retDT.append(aux3[0])
 
     for r in testeRotulos:
         real.append(r)
@@ -344,6 +361,7 @@ def plotGrafic():
     BayAccuracy = bayesian.score(testePosicoes, testeRotulos)
     knnAccuracy = knn.score(testePosicoes, testeRotulos)
     MlpAccuracy = mlp.score(testePosicoes, testeRotulos)
+    DTreeAccuracy = decisionTree.score(testePosicoes, testeRotulos)
 
     jogadas = [
         "1",
@@ -415,6 +433,7 @@ def plotGrafic():
     plt.plot(jogadas, retKnn, alpha=0.5, label="KNN")
     plt.plot(jogadas, retMlp, alpha=0.5, label="MLP")
     plt.plot(jogadas, retBay, alpha=0.5, label="BAY")
+    plt.plot(jogadas, retDT, alpha=0.5, label="DET")
     plt.xlabel("Jogada")
     plt.ylabel("Resultado")
     plt.title("Comparação dos algoritmos com o resultado real")
