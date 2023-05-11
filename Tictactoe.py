@@ -7,6 +7,11 @@ from KnnAlgorithm import KnnAlgorithm
 from MlpAlgorithm import MlpAlgorithm
 from DecisionTreeAlgorithm import DecisionTreeAlgorithm
 from Utils import returnMapa, returnDataSetTreino, returnMapaEstados
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.tree import DecisionTreeClassifier
+
 
 root = Tk()
 root.title("Jogo da velha")
@@ -89,7 +94,7 @@ def verificaVencedor():
 
     # print("KNN: ", type(algoritmo) is KNeighborsClassifier)
     # print("MLP: ", type(algoritmo) is MLPClassifier)
-    # print("BAYESIANO: ", type(algoritmo) is GaussianNB)
+    # print("BAYESIANO: ", type(algoritmo) is BernoulliNB)
     # print("Decision Tree: ", type(algoritmo) is DecisionTreeClassifier)
 
 
