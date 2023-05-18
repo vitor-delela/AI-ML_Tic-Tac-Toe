@@ -1,7 +1,7 @@
 # Tic Tac Toe using ML
 
-Vitor Delela
-Leonardo Vargas
+Vitor Delela,
+Leonardo Vargas,
 Lucas Martins
 
 Relatorio:
